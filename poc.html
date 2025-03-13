@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modal Demo with Simulated Google</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        
+        button {
+            padding: 12px 24px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            padding: 0;
+            border-radius: 5px;
+            width: 80%;
+            height: 80%;
+            max-width: 800px;
+            max-height: 600px;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+        
+        .modal-title {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        
+        .close {
+            color: #aaa;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: black;
+        }
+        
+        .modal-body {
+            flex-grow: 1;
+            overflow: auto;
+        }
+        
+        #contentFrame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        /* Styling for the simulated Google content */
+        .google-container {
+            padding: 20px;
+            text-align: center;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .google-logo {
+            width: 272px;
+            max-width: 100%;
+            height: auto;
+            margin: 20px auto;
+        }
+        
+        .search-container {
+            position: relative;
+            max-width: 584px;
+            margin: 0 auto 20px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border: 1px solid #dfe1e5;
+            border-radius: 24px;
+            font-size: 16px;
+            outline: none;
+        }
+        
+        .search-input:hover, .search-input:focus {
+            box-shadow: 0 1px 6px rgba(32,33,36,.28);
+            border-color: rgba(223,225,229,0);
+        }
+        
+        .search-button {
+            background-color: #f8f9fa;
+            border: 1px solid #f8f9fa;
+            border-radius: 4px;
+            color: #3c4043;
+            font-family: arial,sans-serif;
+            font-size: 14px;
+            margin: 11px 4px;
+            padding: 0 16px;
+            line-height: 27px;
+            height: 36px;
+            min-width: 54px;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .search-button:hover {
+            box-shadow: 0 1px 1px rgba(0,0,0,.1);
+            background-color: #f8f9fa;
+            border: 1px solid #dadce0;
+            color: #202124;
+        }
+        
+        .search-results {
+            text-align: left;
+            max-width: 650px;
+            margin: 0 auto;
+            display: none;
+        }
+        
+        .result {
+            margin-bottom: 25px;
+        }
+        
+        .result-url {
+            color: #202124;
+            font-size: 14px;
+            line-height: 1.3;
+            margin-bottom: 3px;
+        }
+        
+        .result-title {
+            color: #1a0dab;
+            font-size: 18px;
+            line-height: 1.2;
+            margin: 0;
+            font-weight: normal;
+            cursor: pointer;
+        }
+        
+        .result-title:hover {
+            text-decoration: underline;
+        }
+        
+        .result-snippet {
+            color: #4d5156;
+            font-size: 14px;
+            line-height: 1.58;
+            margin-top: 3px;
+        }
+    </style>
+</head>
+<body>
+    <button id="openModal">Open Google</button>
+    
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Google Search</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="contentArea">
+                    <!-- Google-like content area -->
+                    <div class="google-container">
+                        <img class="google-logo" src="data:image/png;base64,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" alt="Google Logo">
+                        
+                        <div class="search-container">
+                            <input type="text" class="search-input" placeholder="Search Google or type a URL">
+                        </div>
+                        
+                        <div>
+                            <button class="search-button" id="googleSearch">Google Search</button>
+                            <button class="search-button" id="feelingLucky">I'm Feeling Lucky</button>
+                        </div>
+                        
+                        <!-- Search Results Area - Initially Hidden -->
+                        <div class="search-results" id="searchResults">
+                            <div class="result">
+                                <div class="result-url">https://en.wikipedia.org/wiki/Search_engine</div>
+                                <h3 class="result-title">Search engine - Wikipedia</h3>
+                                <div class="result-snippet">A search engine is a software system designed to carry out web searches. They search the World Wide Web in a systematic way for particular information...</div>
+                            </div>
+                            
+                            <div class="result">
+                                <div class="result-url">https://developers.google.com/search</div>
+                                <h3 class="result-title">Google Search Central - Developers</h3>
+                                <div class="result-snippet">Google Search Central helps you with your presence on Google Search. It provides tools to submit your content, monitor your performance, and provides resources...</div>
+                            </div>
+                            
+                            <div class="result">
+                                <div class="result-url">https://support.google.com/websearch</div>
+                                <h3 class="result-title">Google Search Help</h3>
+                                <div class="result-snippet">Official Google Search Help Center where you can find tips and tutorials on using Google Search and other answers to frequently asked questions.</div>
+                            </div>
+                            
+                            <div class="result">
+                                <div class="result-url">https://blog.google/products/search/</div>
+                                <h3 class="result-title">The Keyword | Search</h3>
+                                <div class="result-snippet">Read the latest news and updates about Google Search, including new features, insights from our team, and how we're working to make search better.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Get the modal and its elements
+        const modal = document.getElementById("myModal");
+        const btn = document.getElementById("openModal");
+        const span = document.getElementsByClassName("close")[0];
+        const searchBtn = document.getElementById("googleSearch");
+        const luckyBtn = document.getElementById("feelingLucky");
+        const searchInput = document.querySelector(".search-input");
+        const googleContainer = document.querySelector(".google-container");
+        const searchResults = document.getElementById("searchResults");
+        
+        // When the user clicks the button, open the modal
+        btn.onclick = function() {
+            modal.style.display = "flex";
+            // Reset to initial state
+            searchInput.value = "";
+            searchResults.style.display = "none";
+        }
+        
+        // When the user clicks on the close button, close the modal
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+        
+        // When the user clicks outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+        
+        // Handle search button click - show results within the modal
+        searchBtn.onclick = function() {
+            const query = searchInput.value.trim();
+            if (query) {
+                // Show search results section
+                searchResults.style.display = "block";
+                
+                // Optionally, update the title to reflect the search
+                document.querySelector(".modal-title").textContent = query + " - Google Search";
+            }
+        }
+        
+        // Handle "I'm Feeling Lucky" button click
+        luckyBtn.onclick = function() {
+            const query = searchInput.value.trim();
+            
+            // Show the first result as if it was the lucky pick
+            searchResults.style.display = "block";
+            
+            // Update the title
+            document.querySelector(".modal-title").textContent = "I'm Feeling Lucky";
+        }
+        
+        // Handle Enter key in search input
+        searchInput.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                searchBtn.click();
+            }
+        });
+        
+        // Make result titles clickable but stay within the modal
+        const resultTitles = document.querySelectorAll(".result-title");
+        resultTitles.forEach(title => {
+            title.addEventListener("click", function() {
+                // Create a simple page content for the "clicked" link
+                const pageTitle = this.textContent;
+                const pageUrl = this.previousElementSibling.textContent;
+                
+                // Update the content area to simulate navigation
+                document.querySelector(".modal-title").textContent = pageTitle;
+                
+                // Create a simulated content view
+                document.getElementById("contentArea").innerHTML = `
+                    <div style="padding: 20px;">
+                        <div style="color: #1a0dab; font-size: 20px; margin-bottom: 10px;">${pageTitle}</div>
+                        <div style="color: #006621; font-size: 14px; margin-bottom: 20px;">${pageUrl}</div>
+                        <div style="line-height: 1.6;">
+                            <p>This is a simulated page content for demonstration purposes. In a real implementation, this would be actual content from the website.</p>
+                            <p>For your proof of concept, this demonstrates how navigation can work while keeping the user within your modal window.</p>
+                            <button id="backButton" style="margin-top: 20px; padding: 8px 16px; background-color: #f8f9fa; border: 1px solid #dadce0; border-radius: 4px; cursor: pointer;">Back to Search Results</button>
+                        </div>
+                    </div>
+                `;
+                
+                // Add event listener to the back button
+                document.getElementById("backButton").addEventListener("click", function() {
+                    // Restore the original content
+                    location.reload();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
